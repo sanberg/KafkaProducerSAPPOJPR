@@ -7,6 +7,7 @@ import javax.naming.NamingException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Base64;
 import java.util.Properties;
+
 import com.sap.engine.services.webservices.espbase.configuration.ann.dt.AuthenticationDT;
 import com.sap.engine.services.webservices.espbase.configuration.ann.dt.AuthenticationEnumsAuthenticationLevel;
 import com.sap.engine.services.webservices.espbase.configuration.ann.dt.TransportGuaranteeDT;
@@ -20,6 +21,7 @@ import com.sap.engine.interfaces.messaging.api.auditlog.AuditLogStatus;
 import com.sap.engine.services.webservices.espbase.configuration.ann.dt.Addressing;
 import com.sap.engine.services.webservices.espbase.configuration.ann.dt.SessionHandlingDT;
 import com.sap.engine.services.webservices.espbase.configuration.ann.dt.RelMessagingNW05DTOperation;
+
 import javax.ejb.TransactionAttribute;
 
 import org.apache.kafka.clients.producer.KafkaProducer;
@@ -34,10 +36,9 @@ import org.apache.kafka.common.serialization.StringSerializer;
 @WebService(portName = "CommonKafkaMessageRequest_In_Port", serviceName = "CommonKafkaMessageRequest_In_Service", endpointInterface = "ru.detmir.hybris.common.CommonKafkaMessageRequestIn", targetNamespace = "urn:DetMir.ru:Hybris:Common", wsdlLocation = "META-INF/wsdl/ru/detmir/hybris/common/CommonKafkaMessageRequest_In/CommonKafkaMessageRequest_In.wsdl")
 @Stateless
 public class CommonKafkaMessageRequestInImplBean {
-
-	@TransactionAttribute()
-	@RelMessagingNW05DTOperation(enableWSRM = true)
-	public void commonKafkaMessageRequestIn(CommonKafkaMessageRequest commonKafkaMessageRequest) {
+    @TransactionAttribute()
+    @RelMessagingNW05DTOperation(enableWSRM = true)
+    public void commonKafkaMessageRequestIn(CommonKafkaMessageRequest commonKafkaMessageRequest) {
         final Location LOG = Location.getLocation(CommonKafkaMessageRequestInImplBean.class);
 
         //initializing auditlog entries class
@@ -46,35 +47,35 @@ public class CommonKafkaMessageRequestInImplBean {
         MessageMonitor monitor = null;
         try {
             monitor = new MessageMonitor(msgId, MessageDirection.INBOUND);
-        } catch (NamingException | InstantiationException | IllegalAccessException | NoSuchMethodException
-                | InvocationTargetException | NoSuchFieldException e) {
+        } catch (NamingException | InstantiationException | IllegalAccessException | NoSuchMethodException |
+                 InvocationTargetException | NoSuchFieldException e) {
             LOG.debugT("CommonKafkaMessageRequest_In_Proxy: AuditLog object isn't assigned. Exception occurred: " + e.getMessage());
+            throw new RuntimeException();
         }
         addAuditLogEntry(AuditLogStatus.SUCCESS, "CommonKafkaMessageRequest_In_Proxy: Processing started", monitor);
         String server = commonKafkaMessageRequest.getServer();
-		
+
         Properties properties = new Properties();
         properties.setProperty(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, server);
         properties.setProperty(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
         properties.setProperty(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
-        
+
         KafkaProducer<String, String> producer = new KafkaProducer<>(properties);
-       
+
         String decodedData = new String(Base64.getDecoder().decode(commonKafkaMessageRequest.getData()));
-        ProducerRecord<String, String> producerRecord = 
-        		new ProducerRecord<>(commonKafkaMessageRequest.getTopicName(), decodedData);
+        ProducerRecord<String, String> producerRecord = new ProducerRecord<>(commonKafkaMessageRequest.getTopicName(), decodedData);
         producer.send(producerRecord);
         producer.flush();
-        producer.close();	
-	 }
-	
-	private static void addAuditLogEntry(AuditLogStatus status, String s, MessageMonitor monitor) throws RuntimeException {
-		try {
-			monitor.addLogEntry(status, s);
-		} catch (NoSuchMethodException | NoSuchFieldException | IllegalAccessException | InvocationTargetException e) {
-			e.printStackTrace();
-			throw new RuntimeException();
-		}
-	}
-	
+        producer.close();
+    }
+
+    private static void addAuditLogEntry(AuditLogStatus status, String s, MessageMonitor monitor) throws RuntimeException {
+        try {
+            monitor.addLogEntry(status, s);
+        } catch (NoSuchMethodException | NoSuchFieldException | IllegalAccessException | InvocationTargetException e) {
+            e.printStackTrace();
+            throw new RuntimeException();
+        }
+    }
+
 }

@@ -14,6 +14,6 @@ public interface CommonKafkaMessageRequestIn {
    */
   @javax.jws.WebMethod(operationName = "CommonKafkaMessageRequest_In", action = "http://sap.com/xi/WebService/soap1.1")
   @javax.jws.Oneway
-  public void commonKafkaMessageRequestIn(@javax.jws.WebParam(name = "CommonKafkaMessageRequest", targetNamespace = "urn:DetMir.ru:Hybris:Common", partName = "CommonKafkaMessageRequest") ru.detmir.hybris.common.CommonKafkaMessageRequest commonKafkaMessageRequest);
+  public void commonKafkaMessageRequestIn(@javax.jws.WebParam(name = "CommonKafkaMessageRequest", targetNamespace = "urn:DetMir.ru:Hybris:Common", partName = "CommonKafkaMessageRequest") CommonKafkaMessageRequest commonKafkaMessageRequest);
 
 }
