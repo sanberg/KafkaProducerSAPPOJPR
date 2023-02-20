@@ -80,9 +80,9 @@ public class CommonKafkaMessageRequestInImplBean {
             ProducerRecord<String, String> producerRecord = new ProducerRecord<>(commonKafkaMessageRequest.getTopicName(), decodedData);
             RecordMetadata metadata = producer.send(producerRecord).get();
             addAuditLogEntry(AuditLogStatus.SUCCESS, "CommonKafkaMessageRequest_In_Proxy: message was sent to topic "
-                    + commonKafkaMessageRequest.getTopicName() + "with " +
+                    + commonKafkaMessageRequest.getTopicName() + " with " +
                     "offset: " + metadata.offset() +
-                    "timestamp: " + metadata.timestamp(), monitor);
+                    " timestamp: " + metadata.timestamp(), monitor);
         } catch (Exception e) {
             Throwable t = e;
             while (t.getCause() != null) {
