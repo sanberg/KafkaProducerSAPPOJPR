@@ -31,6 +31,9 @@ import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.producer.RecordMetadata;
 
+/**
+ * Implementation bean for Common kafka message request in jpr
+ */
 @SessionHandlingDT(enableSession = false)
 @Addressing(enabled = true)
 @TransportGuaranteeDT(level = TransportGuaranteeEnumsLevel.NONE)
@@ -41,6 +44,14 @@ import org.apache.kafka.clients.producer.RecordMetadata;
 @TransportBindingRT(AltPath = "{urn:DetMir.ru:Hybris:Common}CommonKafkaMessageRequest_In")
 public class CommonKafkaMessageRequestInImplBean {
 
+    /**
+     * util method for adding entries to audit log (pimon message processing log)
+     *
+     * @param status status for entry @see com.sap.engine.interfaces.messaging.api.auditlog.AuditLogStatus enum
+     * @param s monitor entry text
+     * @param monitor ref to monitor object
+     * @throws RuntimeException
+     */
     private static void addAuditLogEntry(AuditLogStatus status, String s, MessageMonitor monitor) throws RuntimeException {
         try {
             monitor.addLogEntry(status, s);
@@ -50,6 +61,11 @@ public class CommonKafkaMessageRequestInImplBean {
         }
     }
 
+    /**
+     * Processing message to kafka
+     *
+     * @param commonKafkaMessageRequest the common kafka message request from sap po
+     */
     @TransactionAttribute()
     @RelMessagingNW05DTOperation(enableWSRM = true)
     public void commonKafkaMessageRequestIn(CommonKafkaMessageRequest commonKafkaMessageRequest) {
